@@ -25,16 +25,16 @@ class QPS(Enum):
 class TableTests(object):
 
     def test_compute_100_bytes_json_op(self):
-        self.compulte_json_op(10000000, 100)
+        self.compulte_json_op(50000000, 100)
 
     def test_compute_1000bytes_json_op(self):
-        self.compulte_json_op(1000000, 1 << 10)
+        self.compulte_json_op(5000000, 1 << 10)
 
     def test_compute_1000_0bytes_json_op(self):
-        self.compulte_json_op(100000, 10 * (1 << 10))
+        self.compulte_json_op(500000, 10 * (1 << 10))
 
     def test_compute_1000_00bytes_json_op(self):
-        self.compulte_json_op(50000, 100 * (1 << 10))
+        self.compulte_json_op(300000, 100 * (1 << 10))
 
     # TODO: add more tests
 
