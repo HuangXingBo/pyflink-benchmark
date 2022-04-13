@@ -25,16 +25,28 @@ class QPS(Enum):
 class TableTests(object):
 
     def test_compute_100_bytes_json_op(self):
-        self.compulte_json_op(50000000, 100)
+        self.compute_json_op(20000000, 100)
 
     def test_compute_1000bytes_json_op(self):
-        self.compulte_json_op(5000000, 1 << 10)
+        self.compute_json_op(5000000, 1 << 10)
 
     def test_compute_1000_0bytes_json_op(self):
-        self.compulte_json_op(500000, 10 * (1 << 10))
+        self.compute_json_op(500000, 10 * (1 << 10))
 
     def test_compute_1000_00bytes_json_op(self):
-        self.compulte_json_op(300000, 100 * (1 << 10))
+        self.compute_json_op(300000, 100 * (1 << 10))
+
+    def test_compute_100_bytes_string_upper(self):
+        self.compute_string_upper(20000000, 100)
+
+    def test_compute_1000bytes_string_upper(self):
+        self.compute_string_upper(5000000, 1 << 10)
+
+    def test_compute_1000_0bytes_string_upper(self):
+        self.compute_string_upper(500000, 10 * (1 << 10))
+
+    def test_compute_1000_00bytes_string_upper(self):
+        self.compute_string_upper(300000, 100 * (1 << 10))
 
     # TODO: add more tests
 
@@ -94,7 +106,7 @@ class PyFlinkTableTests(PyFlinkTests, ABC):
         if udtafs:
             register_function(udtafs)
 
-    def compulte_json_op(self, num_rows: int, field_size: int):
+    def compute_json_op(self, num_rows: int, field_size: int):
         self.create_source_sink(num_rows, field_size, QPS.QPS_500_W)
         table_result = self.t_env.from_path('source_table') \
             .select("{}(id)".format(self.get_function_name("json"))) \
@@ -102,6 +114,18 @@ class PyFlinkTableTests(PyFlinkTests, ABC):
         beg_time = time.time()
         table_result.wait()
         print("{0} computes {1} bytes json operate QPS is {2} ".format(
+            self,
+            field_size,
+            num_rows / (time.time() - beg_time)))
+
+    def compute_string_upper(self, num_rows: int, field_size: int):
+        self.create_source_sink(num_rows, field_size, QPS.QPS_500_W)
+        table_result = self.t_env.from_path('source_table') \
+            .select("{}(id)".format(self.get_function_name("upper"))) \
+            .execute_insert('sink_table')
+        beg_time = time.time()
+        table_result.wait()
+        print("{0} computes {1} bytes string upper QPS is {2} ".format(
             self,
             field_size,
             num_rows / (time.time() - beg_time)))
